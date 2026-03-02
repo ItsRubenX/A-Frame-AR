@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+        <script src="https://unpkg.com/@c-frame/aframe-particle-system-component@1.2.x/dist/aframe-particle-system-component.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/aframe-simple-sun-sky@^1.2.2/simple-sun-sky.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.0/dist/aframe-extras.min.js"></script>
+    </head>
+    <body>
+        <a-scene cursor="rayOrigin: mouse">
+            <a-box src="https://media.freestocktextures.com/cache/12/ef/12efb857005f76685eeb8b41d87571f0.jpg" position="0 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+            <a-sphere position="3 0 -15" radius="10" color="#EF2D5E"></a-sphere>
+            <a-cylinder position="-2 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+            <a-plane position="0 0 -4" rotation="-90 0 0" width="50" height="50" color="#7BC8A4"></a-plane>
+            <a-box position="0 1.5 1.5" rotation="0 0 0" color="red" animation="property: position; easing: easeInOutQuad; dir: alternate; dur: 1000; to: 0 0.25 1.5; loop: true"></a-box>
+            
+            <a-text value="This is text!" position="0 2 0"></a-text>
+            <a-entity id="ocean" ocean="density: 20; width: 100; depth: 100; speed: 2"
+                material="color: #9CE3F9; opacity: 0.75; metalness: 0; roughness: 1"
+                position="0 0.4 0"
+                rotation="-90 0 0"></a-entity>
+
+            <!-- <a-simple-sun-sky id="clickableSun" sun-position="1 0.4 0" fog-color="#74d2fa"></a-simple-sun-sky>-->
+            <a-sphere id="clickableSun" position="0 200 0" radius="5" color="gold" emissive="orange"></a-sphere> 
+            <a-entity id="explosion" particle-system="particleCount: 2200; maxAge: 2.2; positionSpread: 2.8 2.8 2.8; velocityValue: 0 65 0; velocitySpread: 95 95 95; accelerationValue: 0 -8 0; accelerationSpread: 24 24 24; color: #fff8b8,#ffbe55,#ff5a2f; size: 30,0.1; opacity: 1,0; blending: additive" position="0 200 0" visible="false"></a-entity>
+            <a-entity id="light" light="type: ambient; color: #FFFFFF; intensity: 0.7"></a-entity>
+            
+            <a-sky color="#74d2fa"></a-sky>
+        </a-scene>
+
+        <script>
+            const sun = document.getElementById('clickableSun');
+            const explosion = document.getElementById('explosion');
+            const light = document.getElementById('light');
+            const normalLightIntensity = 0.7;
+            const flashLightIntensity = 4.5;
+            const smallExplosionConfig = 'particleCount: 900; maxAge: 0.8; positionSpread: 0.4 0.4 0.4; velocityValue: 0 18 0; velocitySpread: 20 20 20; accelerationValue: 0 -6 0; accelerationSpread: 10 10 10; color: #fff8b8,#ffbe55,#ff5a2f; size: 6,0.2; opacity: 1,0; blending: additive';
+            const intenseExplosionConfig = 'particleCount: 2600; maxAge: 2.4; positionSpread: 3.2 3.2 3.2; velocityValue: 0 75 0; velocitySpread: 120 120 120; accelerationValue: 0 -8 0; accelerationSpread: 28 28 28; color: #fffbe0,#ffd36b,#ff6a34; size: 36,0.12; opacity: 1,0; blending: additive';
+            
+            sun.addEventListener('click', function() {
+                // Flash global light brighter
+                light.setAttribute('light', 'intensity', flashLightIntensity);
+
+                // Small initial burst
+                explosion.removeAttribute('particle-system');
+                explosion.setAttribute('particle-system', smallExplosionConfig);
+                explosion.setAttribute('visible', true);
+
+                // Ramp to intense explosion
+                setTimeout(() => {
+                    explosion.removeAttribute('particle-system');
+                    explosion.setAttribute('particle-system', intenseExplosionConfig);
+                }, 180);
+                
+                // Hide the sun
+                sun.setAttribute('visible', false);
+                
+                // Reset after animation
+                setTimeout(() => {
+                    sun.setAttribute('visible', true);
+                    explosion.setAttribute('visible', false);
+                    light.setAttribute('light', 'intensity', normalLightIntensity);
+                }, 2600);
+            });
+        </script>
+    </body>
+</html>
